@@ -1,16 +1,13 @@
 
- Syntax for Mysql 
+Syntax for Mysql:-
 
 A> Syntax for Databases:-
-1. CREATE DATABASE {database_name};          
-2. USE {database_name};                      # selects a database for use
-3. SHOW DATABASES;                           # shows all the databases created on the workbench
-4. DROP DATABASE {database_name};            
-5. SELECT DATABASE();                        # shows the current database in use
-6. RENAME DATABASE {old_name} TO {new_name};
-7. ALTER DATABASE {database_name} READ ONLY = 0/1;  # 0=OFF, 1=ON
-8. SHOW TABLES IN {database_name};           # shows all the names of the tables in that database
-9. SHOW TABLES                               # shows all the tables in the current database
+1. CREATE DATABASE {database_name};     
+2. USE {database_name};                     
+3. DROP DATABASE {database_name};            
+4. RENAME DATABASE {old_name} TO {new_name};
+5. ALTER DATABASE {database_name} READ ONLY = 0/1;  # 0=OFF, 1=ON
+
 
 B> Syntax for Tables:-
 1. CREATE TABLE {table_name} (
@@ -20,29 +17,50 @@ B> Syntax for Tables:-
 2. RENAME TABLE {old_name} TO {new_name};
 3. DROP TABLE {table_name};
 4. DELETE * FROM TABLE {table_name} or TRUNCATE TABLE {table_name};
-5. SHOW TABLE STATUS;
-6. DESCRIBE {table_name};
+
 
 C> Syntax for Columns:-
 1. ALTER TABLE {table_name} 
    ADD {column_name} {datatype};
+
 2. ALTER TABLE {table_name} 
    DROP COLUMN {column_name};
+
 3. ALTER TABLE {table_name} 
    MODIFY {column_name} {new_datatype};
+
 4. ALTER TABLE {table_name} 
    RENAME COLUMN {old_name} TO {new_name};
+
 5. ALTER TABLE {table_name}
    MODIFY {column_name} {datatype}
    AFTER {column_name};
+
 6. ALTER TABLE {table_name}
    MODIFY {column_name} {datatype}
    FIRST;
 
+
 D> Datatypes in MySQL:-
-Broadly speaking there are 3, string, numeric and data & time  
+There are 3 categories of datatypes in SQL :- 
+String, numeric and data & time  
+Most commonly used datatypes are as follows:-
+-> String : VARCHAR(size), CHAR, TEXT, ENUM
+-> Numeric : INT(size), DECIMAL(size, decimal places)
+-> Date & Time : DATE, DATETIME(fsp), TIMESTAMP(fsp), TIME(fsp), YEAR
+
 
 E> Constraints:-
+There are 8 constraints in SQL, here is a list of all of them:-
+1 NOT NULL
+2 UNIQUE
+3 PRIMARY KEY
+4 FOREIGN KEY
+5 CHECK
+6 DEFAULT
+7 AUTO_INCREMENT
+8 INDEX or CREATE INDEX
+
 1. CREATE TABLE {table_name} (
     {column_name1} {datatype} {constraint},
     {column_name2} {datatype} {constraint},
@@ -66,6 +84,7 @@ PRIMARY KEY - A combination of a NOT NULL and UNIQUE. Uniquely identifies each r
    PRIMARY KEY({column_name});
 FOREIGN KEY - Prevents actions that would destroy links between tables
 AUTO INCREMENT - Used to create and retrieve data from the database very quickly
+
 
 F> Inserting data into tables:-
 1. INSERT INTO (table_name}
