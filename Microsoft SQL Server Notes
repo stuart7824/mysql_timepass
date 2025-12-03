@@ -1,0 +1,9 @@
+Syntax for Sql (Mircosoft SQL Server ):-
+
+Categories for SQL:-
+- DDL : Data Definition Language : create, alter, drop, truncate
+- DML : Data Manipulation Language : insert, update, delete, merge 
+- DQL : Data Query Language : select
+- DCL : Data Control Language : grant, revoke, deny
+- TCL : Transaction Control Language : begin transaction, save transaction, commit, rollback
+
