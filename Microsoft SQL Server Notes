@@ -1,9 +1,83 @@
 Syntax for Sql (Mircosoft SQL Server ):-
 
-Categories for SQL:-
-- DDL : Data Definition Language : create, alter, drop, truncate
-- DML : Data Manipulation Language : insert, update, delete, merge 
+--> Categories for SQL:-
+- DDL : Data Definition Language : create, drop, alter, truncate
+- DML : Data Manipulation Language : insert, update, delete, select, (merge 
 - DQL : Data Query Language : select
-- DCL : Data Control Language : grant, revoke, deny
-- TCL : Transaction Control Language : begin transaction, save transaction, commit, rollback
+- DCL : Data Control Language : grant, revoke, deny)
+- TCL : Transactional Control Language : begin transaction, save transaction, commit, rollback
+
+
+--> Database objects:-
+- tables
+- views
+- indexes
+- schemas
+- procedures
+- functions
+- triggers
+
+
+--> Data Integrity Constraints:-
+- NOT NULL
+- UNIQUE
+- PRIMARY KEY
+- FOREIGN KEY
+- CHECK
+- DEFAULT
+
+
+--> Categories of datatypes:-
+1) String
+  - char(n) : A FIXED length string
+  - varchar(n) : A VARIABLE length string
+
+2) Numeric
+  - int : Used for standard whole numbers (integers)
+  - numeric(n) : Used for exact decimal numbers, defining the total number of digits (n).
+  - decimal(p,s) : Used for exact decimal numbers, defining total digits (p) and decimal places (s)
+  - real : for number with unknown decimal
+  - bit [boolean] : 0 (False), 1 (True), or NULL
+
+3) Date & Time
+  - date [YYYY-MM-DD] 
+  - time [HH:MM:SS] 
+  - datetime [YYYY-MM-DD HH:MM:SS]
+
+--> Comments in sql:-
+1) -- double hyphen is for a single line comment
+2) /* and this
+    is a 
+    multiline comment*/
+
+--> DDL:-
+A. --- CREATE Command ---
+1) create database {databasename};
+2) use {databasename};
+3) create table {tablename} (
+    {attribute_name1} {datatype} {contraint [if any]},
+    {attribute_name2} {datatype} {contraint [if any]},
+    {attribute_name3} {datatype} {contraint [if any]},
+    {attribute_name4} {datatype} {contraint [if any]}
+    );
+
+B. --- ALTER COMMAND ---
+1) add/drop columns
+2) add/drop constraints
+3) modify columns
+4) rename table/columns
+
+c. --- DROP Command ---
+1) drop database {databasename};
+2) drop table {table_name};
+
+D. --- TRUNCATE Command ---
+1) truncate table {table_name};
+
+
+--> DML:- 
+
+
+
+
 
