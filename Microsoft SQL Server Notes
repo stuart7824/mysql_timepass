@@ -1,4 +1,9 @@
-Syntax for Sql (Mircosoft SQL Server ):-
+    ------DBMS-------    (Database Management System)
+    |              |
+Relational   Non-Relational
+  DBMS            DBMS
+
+SQL (Structured query language) is the programming language used in RDBMS Softwares like MySQL, Oracle database, SSMS, PostgreSQL, etc
 
 --> Categories for SQL:-
 - DDL : Data Definition Language : create, drop, alter, truncate
@@ -9,22 +14,60 @@ Syntax for Sql (Mircosoft SQL Server ):-
 
 
 --> Database objects:-
-- tables
-- views
-- indexes
-- schemas
-- procedures
-- functions
-- triggers
+Database Objects are the defined, named structures that are used to store, manage, and reference data within a RDBMS.
+
+1. Data Storage Objects (The Structure) - These objects are used to directly store or structure the raw data
+- Tables
+- Indexes
+- Views
+- Sequences
+
+2. Programmatic Objects (The Functionality) - These objects contain executable code or logic to perform specific tasks
+- Stored procedures
+- Functions
+- Triggers
+
+3. Security and Other Objects - These objects manage access, security, and administrative tasks.
+- Schemas
+- Users & roles
 
 
 --> Data Integrity Constraints:-
-- NOT NULL
-- UNIQUE
 - PRIMARY KEY
 - FOREIGN KEY
+- NOT NULL
+- UNIQUE
 - CHECK
 - DEFAULT
+
+1) Primary Key
+- Uniquely identifies every single row in a table (entity integrity)
+- It wont take repeated value
+- It wont take any null value
+- A table can only have 1 primary key
+
+2) Foreign key
+- The foreign key in the child table references to the primary key in the parent table
+- Referential Integrity. Ensures relationships between tables are valid, preventing "orphan" records.
+- Allows nulls
+- A table can have multiple foreign keys
+
+3) Not null
+- Restricts a column from accepting a NULL value
+- (Domain Integrity)
+
+4) Unique
+- Ensures that all values in a column are different.
+- It can take null values
+- (Domain Integrity)
+
+5) Check
+- Restricts the range of values that can be placed in a column.
+- (Domain Integrity)
+
+6) Default
+- Provides a default value for a column if no value is explicitly specified during an INSERT operation.
+- (Domain Integrity)
 
 
 --> Categories of datatypes:-
@@ -33,16 +76,16 @@ Syntax for Sql (Mircosoft SQL Server ):-
   - varchar(n) : A VARIABLE length string
 
 2) Numeric
-  - int : Used for standard whole numbers (integers)
-  - numeric(n) : Used for exact decimal numbers, defining the total number of digits (n).
-  - decimal(p,s) : Used for exact decimal numbers, defining total digits (p) and decimal places (s)
-  - real : for number with unknown decimal
-  - bit [boolean] : 0 (False), 1 (True), or NULL
+  - int : for whole numbers (integers)
+  - numeric(n) : defining the total number of digits (n)
+  - real : for number with unknown decimal places
+  - bit [boolean] : 0 (False), 1 (True)
 
 3) Date & Time
   - date [YYYY-MM-DD] 
   - time [HH:MM:SS] 
   - datetime [YYYY-MM-DD HH:MM:SS]
+
 
 --> Comments in sql:-
 1) -- double hyphen is for a single line comment
