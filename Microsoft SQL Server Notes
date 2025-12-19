@@ -6,11 +6,11 @@ Relational   Non-Relational
 SQL (Structured query language) is the programming language used in RDBMS Softwares like MySQL, Oracle database, SSMS, PostgreSQL, etc
 
 --> Categories for SQL:-
-- DDL : Data Definition Language : create, drop, alter, truncate
+- DDL : Data Definition Language : create, alter, drop, truncate, rename
 - DML : Data Manipulation Language : insert, update, delete
 - DQL : Data Query Language : select
 - DCL : Data Control Language : grant, revoke
-- TCL : Transaction Control Language : begin transaction, savepoint, commit, rollback
+- TCL : Transaction Control Language : savepoint, commit, rollback
 
 
 --> Database objects:-
