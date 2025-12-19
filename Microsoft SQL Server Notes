@@ -7,10 +7,10 @@ SQL (Structured query language) is the programming language used in RDBMS Softwa
 
 --> Categories for SQL:-
 - DDL : Data Definition Language : create, drop, alter, truncate
-- DML : Data Manipulation Language : insert, update, delete, select, (merge 
+- DML : Data Manipulation Language : insert, update, delete
 - DQL : Data Query Language : select
-- DCL : Data Control Language : grant, revoke, deny)
-- TCL : Transactional Control Language : begin transaction, save transaction, commit, rollback
+- DCL : Data Control Language : grant, revoke
+- TCL : Transaction Control Language : begin transaction, savepoint, commit, rollback
 
 
 --> Database objects:-
