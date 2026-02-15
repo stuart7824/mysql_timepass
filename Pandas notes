@@ -1,0 +1,50 @@
+Importing the library:-
+- import pandas as pd    |  (pd is JUST an alias for pandas so we write pd instead of the entire word 'pandas')
+- import numpy as np
+
+Loading the datasets:-
+- df=pd.read_excel('filename')
+- df=pd.read_csv('filename')
+- df=pd.read_sql('filename')
+
+Viewing dataset:-
+- df
+- df.head(n) / df.tail(n)
+- df.shape
+- df.size
+- df.info()
+- df.columns
+- df.dtypes
+- df.sample(n)
+
+Data preprocessing:-
+1) Check if the datatypes of columns are correct
+2) Check if the format/values of the columns are correct
+3) Check for null values
+4) Check for duplicates
+5) Check for outliers
+
+selecting columns:-
+- df['Fruits']
+- df[['Fruits', 'Price']]
+
+Missing values:-
+- df.isnull()
+- df.isnull().sum()
+- df1 = df.dropna()
+
+filtering:-
+- df[df["Loss"]<0]
+- df[(df['Price'] > 100) & (df['Category'] == 'Electronics')]
+- df[df['City'].isin(['NYC', 'LA', 'Chicago'])]
+- df[df['Email'].str.contains('.gov')]
+
+sorting:-
+- df.sort_values('Price')
+- df.sort_values('Price', ascending=False)
+- df.sort_values(by=['Category', 'Price'], ascending=[True, False])
+
+grouping:-
+- 
+
+
