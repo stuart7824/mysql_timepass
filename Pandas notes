@@ -7,10 +7,17 @@ Loading the datasets:-
 - df=pd.read_csv('filename')
 - df=pd.read_sql('filename')
 
+Datatypes in pandas:-
+- object
+- int64
+- float64
+- bool
+- datetime64[ns] 
+
 Viewing dataset:-
 - df
 - df.head(n) / df.tail(n)
-- df.shape
+- df.shape[0/1]
 - df.size
 - df.info()
 - df.columns
@@ -28,6 +35,7 @@ selecting columns:-
 - df['Fruits']
 - df[['Fruits', 'Price']]
 
+Before EDA - (filtering, sorting, grouping & aggregation)
 Missing values:-
 - df.isnull()
 - df.isnull().sum()
