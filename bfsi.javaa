@@ -1,0 +1,281 @@
+import java.util.ArrayList;
+import java.util.List;
+
+enum EmploymentType {
+    SALARIED,
+    SELF_EMPLOYED,
+    BUSINESS_OWNER,
+    UNEMPLOYED
+}
+
+enum RatingGrade {
+    AAA, AA, A, BBB, BB, B, C, D
+}
+
+enum ApprovalStatus {
+    APPROVED,
+    CONDITIONALLY_APPROVED,
+    REJECTED
+}
+
+/** Represents a loan/credit applicant and the details needed for underwriting. */
+class Applicant {
+    private final String name;
+    private final int age;
+    private final double monthlyIncome;
+    private final double existingMonthlyEMIs;   // EMIs already being paid on other loans
+    private final int cibilScore;                // 300 - 900
+    private final EmploymentType employmentType;
+    private final int employmentYears;
+    private final int existingDefaults;          // count of past missed/defaulted repayments
+    private final double requestedLoanAmount;
+    private final int requestedTenureMonths;
+
+  // constructor
+    public Applicant(String name, int age, double monthlyIncome, double existingMonthlyEMIs,
+                      int cibilScore, EmploymentType employmentType, int employmentYears,
+                      int existingDefaults, double requestedLoanAmount, int requestedTenureMonths) {
+        this.name = name;
+        this.age = age;
+        this.monthlyIncome = monthlyIncome;
+        this.existingMonthlyEMIs = existingMonthlyEMIs;
+        this.cibilScore = cibilScore;
+        this.employmentType = employmentType;
+        this.employmentYears = employmentYears;
+        this.existingDefaults = existingDefaults;
+        this.requestedLoanAmount = requestedLoanAmount;
+        this.requestedTenureMonths = requestedTenureMonths;
+    }
+
+  // getters
+    public String getName() { return name; }
+    public int getAge() { return age; }
+    public double getMonthlyIncome() { return monthlyIncome; }
+    public double getExistingMonthlyEMIs() { return existingMonthlyEMIs; }
+    public int getCibilScore() { return cibilScore; }
+    public EmploymentType getEmploymentType() { return employmentType; }
+    public int getEmploymentYears() { return employmentYears; }
+    public int getExistingDefaults() { return existingDefaults; }
+    public double getRequestedLoanAmount() { return requestedLoanAmount; }
+    public int getRequestedTenureMonths() { return requestedTenureMonths; }
+}
+
+// Holds the full output of an underwriting assessment for one applicant.
+class CreditAssessmentResult {
+    private final double totalScore;
+    private final RatingGrade grade;
+    private final ApprovalStatus status;
+    private final double dtiRatioPercent;
+    private final double suggestedAnnualRate;
+    private final double maxEligibleLoanAmount;
+    private final List<String> reasons;
+
+  // constructor
+    public CreditAssessmentResult(double totalScore, RatingGrade grade, ApprovalStatus status,
+                                   double dtiRatioPercent, double suggestedAnnualRate,
+                                   double maxEligibleLoanAmount, List<String> reasons) {
+        this.totalScore = totalScore;
+        this.grade = grade;
+        this.status = status;
+        this.dtiRatioPercent = dtiRatioPercent;
+        this.suggestedAnnualRate = suggestedAnnualRate;
+        this.maxEligibleLoanAmount = maxEligibleLoanAmount;
+        this.reasons = reasons;
+    }
+
+    public double getTotalScore() { return totalScore; }
+    public RatingGrade getGrade() { return grade; }
+    public ApprovalStatus getStatus() { return status; }
+    public double getDtiRatioPercent() { return dtiRatioPercent; }
+    public double getSuggestedAnnualRate() { return suggestedAnnualRate; }
+    public double getMaxEligibleLoanAmount() { return maxEligibleLoanAmount; }
+    public List<String> getReasons() { return reasons; }
+}
+
+/** Core underwriting engine: converts an Applicant into a CreditAssessmentResult. */
+class CreditRatingEngine {
+
+    // Benchmark rate used only to compute an indicative EMI for DTI purposes,
+    // before risk-based pricing is applied post-grading.
+    private static final double BENCHMARK_EVAL_RATE = 10.0;
+
+    public static double calculateEMI(double principal, double annualRatePercent, int tenureMonths) {
+        if (tenureMonths <= 0) return 0;
+        double r = annualRatePercent / 12.0 / 100.0;
+        if (r == 0) return principal / tenureMonths;
+        double factor = Math.pow(1 + r, tenureMonths);
+        return principal * r * factor / (factor - 1);
+    }
+
+    public CreditAssessmentResult assess(Applicant a) {
+        List<String> reasons = new ArrayList<>();
+        double score = 0;
+
+        // ---- 1. Credit Bureau (CIBIL) Score: 40 pts ----
+        double cibilPoints;
+        int cs = a.getCibilScore();
+        if (cs >= 750) { cibilPoints = 40; reasons.add("Excellent bureau score (" + cs + ")"); }
+        else if (cs >= 700) { cibilPoints = 32; reasons.add("Good bureau score (" + cs + ")"); }
+        else if (cs >= 650) { cibilPoints = 24; reasons.add("Fair bureau score (" + cs + ")"); }
+        else if (cs >= 600) { cibilPoints = 14; reasons.add("Weak bureau score (" + cs + ")"); }
+        else { cibilPoints = 5; reasons.add("Poor bureau score (" + cs + ")"); }
+        score += cibilPoints;
+
+        // ---- 2. Debt-to-Income Ratio: 25 pts ----
+        double proposedEMI = calculateEMI(a.getRequestedLoanAmount(), BENCHMARK_EVAL_RATE, a.getRequestedTenureMonths());
+        double totalEMI = a.getExistingMonthlyEMIs() + proposedEMI;
+        double dti = a.getMonthlyIncome() > 0 ? (totalEMI / a.getMonthlyIncome()) * 100 : 100;
+
+        double dtiPoints;
+        if (dti <= 30) { dtiPoints = 25; reasons.add(String.format("Comfortable DTI (%.1f%%)", dti)); }
+        else if (dti <= 40) { dtiPoints = 18; reasons.add(String.format("Acceptable DTI (%.1f%%)", dti)); }
+        else if (dti <= 50) { dtiPoints = 10; reasons.add(String.format("Elevated DTI (%.1f%%)", dti)); }
+        else if (dti <= 60) { dtiPoints = 4; reasons.add(String.format("High DTI (%.1f%%)", dti)); }
+        else { dtiPoints = 0; reasons.add(String.format("Very high DTI (%.1f%%)", dti)); }
+        score += dtiPoints;
+
+        // ---- 3. Employment Stability: 15 pts ----
+        double empPoints;
+        EmploymentType et = a.getEmploymentType();
+        int ey = a.getEmploymentYears();
+        if (et == EmploymentType.SALARIED && ey >= 3) { empPoints = 15; reasons.add("Stable salaried employment (" + ey + " yrs)"); }
+        else if (et == EmploymentType.SALARIED) { empPoints = 10; reasons.add("Salaried, limited tenure (" + ey + " yrs)"); }
+        else if ((et == EmploymentType.SELF_EMPLOYED || et == EmploymentType.BUSINESS_OWNER) && ey >= 5) { empPoints = 12; reasons.add("Established self-employment/business (" + ey + " yrs)"); }
+        else if (et == EmploymentType.SELF_EMPLOYED || et == EmploymentType.BUSINESS_OWNER) { empPoints = 7; reasons.add("Self-employed/business, limited vintage (" + ey + " yrs)"); }
+        else { empPoints = 0; reasons.add("No stable income source"); }
+        score += empPoints;
+
+        // ---- 4. Repayment Track Record: 10 pts ----
+        double trackPoints;
+        int defaults = a.getExistingDefaults();
+        if (defaults == 0) { trackPoints = 10; reasons.add("Clean repayment history"); }
+        else if (defaults == 1) { trackPoints = 5; reasons.add("One past default on record"); }
+        else { trackPoints = 0; reasons.add(defaults + " past defaults on record"); }
+        score += trackPoints;
+
+        // ---- 5. Loan-to-Income Multiple: 10 pts ----
+        double annualIncome = a.getMonthlyIncome() * 12;
+        double loanToIncome = annualIncome > 0 ? a.getRequestedLoanAmount() / annualIncome : Double.MAX_VALUE;
+        double ltiPoints;
+        if (loanToIncome <= 2) { ltiPoints = 10; reasons.add("Requested amount well within income capacity"); }
+        else if (loanToIncome <= 4) { ltiPoints = 7; reasons.add("Requested amount moderately geared to income"); }
+        else if (loanToIncome <= 6) { ltiPoints = 4; reasons.add("Requested amount highly geared to income"); }
+        else { ltiPoints = 0; reasons.add("Requested amount excessive relative to income"); }
+        score += ltiPoints;
+
+        // ---- Map score to rating grade ----
+        RatingGrade grade;
+        if (score >= 90) grade = RatingGrade.AAA;
+        else if (score >= 80) grade = RatingGrade.AA;
+        else if (score >= 70) grade = RatingGrade.A;
+        else if (score >= 60) grade = RatingGrade.BBB;
+        else if (score >= 50) grade = RatingGrade.BB;
+        else if (score >= 40) grade = RatingGrade.B;
+        else if (score >= 30) grade = RatingGrade.C;
+        else grade = RatingGrade.D;
+
+        // ---- Hard decline rules (override grade-based outcome) ----
+        boolean hardDecline = false;
+        if (cs < 550) { hardDecline = true; reasons.add("HARD DECLINE: bureau score below minimum threshold (550)"); }
+        if (dti > 65) { hardDecline = true; reasons.add("HARD DECLINE: DTI exceeds maximum threshold (65%)"); }
+        if (defaults >= 3) { hardDecline = true; reasons.add("HARD DECLINE: 3 or more recorded defaults"); }
+
+        // ---- Approval decision ----
+        ApprovalStatus status;
+        if (hardDecline) {
+            status = ApprovalStatus.REJECTED;
+        } else {
+            switch (grade) {
+                case AAA: case AA: case A: case BBB:
+                    status = ApprovalStatus.APPROVED;
+                    break;
+                case BB: case B:
+                    status = ApprovalStatus.CONDITIONALLY_APPROVED;
+                    reasons.add("Conditional: consider collateral, guarantor, or reduced ticket size");
+                    break;
+                default:
+                    status = ApprovalStatus.REJECTED;
+            }
+        }
+
+        // ---- Risk-based pricing (indicative annual rate) ----
+        double suggestedRate;
+        switch (grade) {
+            case AAA: suggestedRate = 9.00; break;
+            case AA:  suggestedRate = 9.50; break;
+            case A:   suggestedRate = 10.25; break;
+            case BBB: suggestedRate = 11.50; break;
+            case BB:  suggestedRate = 13.00; break;
+            case B:   suggestedRate = 15.00; break;
+            default:  suggestedRate = 0.0; // not priced - rejected
+        }
+        if (status == ApprovalStatus.REJECTED) suggestedRate = 0.0;
+
+        // ---- Max eligible loan amount (income-multiple cap by grade) ----
+        double multiplier;
+        switch (grade) {
+            case AAA: multiplier = 6.0; break;
+            case AA:  multiplier = 5.0; break;
+            case A:   multiplier = 4.0; break;
+            case BBB: multiplier = 3.0; break;
+            case BB:  multiplier = 2.0; break;
+            case B:   multiplier = 1.0; break;
+            default:  multiplier = 0.0;
+        }
+        double maxEligible = status == ApprovalStatus.REJECTED ? 0.0
+                : Math.min(annualIncome * multiplier, Math.max(a.getRequestedLoanAmount(), annualIncome * multiplier));
+        // Cap sensibly: never suggest more than 1.5x what was actually requested, for readability
+        maxEligible = status == ApprovalStatus.REJECTED ? 0.0 : Math.min(annualIncome * multiplier, a.getRequestedLoanAmount() * 1.5);
+
+        return new CreditAssessmentResult(score, grade, status, dti, suggestedRate, maxEligible, reasons);
+    }
+}
+
+/** Entry point: builds a few sample applicants and prints an underwriting report for each. */
+public class CreditRatingApprovalSystem {
+
+    public static void main(String[] args) {
+        List<Applicant> applicants = new ArrayList<>();
+
+        applicants.add(new Applicant("Rahul Sharma", 34, 150000, 15000, 782,
+                EmploymentType.SALARIED, 8, 0, 2000000, 60));
+
+        applicants.add(new Applicant("Priya Nair", 29, 60000, 8000, 668,
+                EmploymentType.SALARIED, 2, 1, 800000, 48));
+
+        applicants.add(new Applicant("Arjun Mehta", 41, 200000, 20000, 610,
+                EmploymentType.BUSINESS_OWNER, 6, 2, 5000000, 84));
+
+        applicants.add(new Applicant("Sneha Kapoor", 25, 35000, 5000, 540,
+                EmploymentType.SELF_EMPLOYED, 1, 3, 1000000, 36));
+
+        CreditRatingEngine engine = new CreditRatingEngine();
+
+        for (Applicant applicant : applicants) {
+            CreditAssessmentResult result = engine.assess(applicant);
+            printReport(applicant, result);
+        }
+    }
+
+    private static void printReport(Applicant a, CreditAssessmentResult r) {
+        System.out.println("========================================================");
+        System.out.println("Applicant           : " + a.getName() + "  (Age " + a.getAge() + ")");
+        System.out.printf ("Monthly Income      : Rs. %,.0f%n", a.getMonthlyIncome());
+        System.out.println("Bureau (CIBIL) Score: " + a.getCibilScore());
+        System.out.printf ("Loan Requested      : Rs. %,.0f over %d months%n", a.getRequestedLoanAmount(), a.getRequestedTenureMonths());
+        System.out.println("--------------------------------------------------------");
+        System.out.printf ("Composite Score      : %.1f / 100%n", r.getTotalScore());
+        System.out.println("Rating Grade         : " + r.getGrade());
+        System.out.println("Decision             : " + r.getStatus());
+        System.out.printf ("DTI Ratio            : %.1f%%%n", r.getDtiRatioPercent());
+        if (r.getStatus() != ApprovalStatus.REJECTED) {
+            System.out.printf("Suggested Rate       : %.2f%% p.a.%n", r.getSuggestedAnnualRate());
+            System.out.printf("Max Eligible Amount  : Rs. %,.0f%n", r.getMaxEligibleLoanAmount());
+        }
+        System.out.println("Key Factors:");
+        for (String reason : r.getReasons()) {
+            System.out.println("  - " + reason);
+        }
+        System.out.println("========================================================\n");
+    }
+}
